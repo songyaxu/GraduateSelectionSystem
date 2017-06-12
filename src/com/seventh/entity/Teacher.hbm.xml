@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.seventh.entity.Teacher" table="teacher">
+		<id name="id" column="id" type="string"></id>
+		<property name="password" column="password" type="string"></property>
+		<property name="name" column="name" type="string"></property>
+		<property name="gender" column="gender" type="string"></property>
+		<property name="positionId" column="positionId" type="int"></property>
+		<property name="fieldId" column="fieldId" type="int"></property>
+		<property name="guidanceNum" column="guidanceNum" type="int"></property>
+		<property name="maxGuidanceNum" column="maxGuidanceNum" type="int"></property>
+		<property name="qq" column="qq" type="string"></property>
+		<property name="email" column="email" type="string"></property>
+		<property name="phone" column="phone" type="string"></property>
+		<property name="questionNum" column="questionNum" type="int"></property>
+	</class>
+</hibernate-mapping>

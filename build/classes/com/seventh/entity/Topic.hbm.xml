@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class name="com.seventh.entity.Topic" table="topic">
+		<id name="id" column="id" type="int">
+			<generator class="identity"> <!-- 主键id的生成方式为自增 -->
+			</generator>
+		</id>
+		<version name="version" column="version"></version>
+		<property name="title" column="title" type="string"></property>
+		<property name="content" column="content" type="string"></property>
+		<property name="description" column="description" type="string"></property>
+		<property name="environment" column="environment" type="string"></property>
+		<property name="difficulty" column="difficulty" type="int"></property>
+		<property name="needNum" column="needNum" type="int"></property>
+		<property name="fieldId" column="fieldId" type="int"></property>
+		<property name="teacherId" column="teacherId" type="string"></property>
+		<property name="studentId" column="studentId" type="string"></property>
+		<property name="isStuApply" column="isStuApply" type="int"></property>
+		<property name="state" column="state" type="int"></property>
+		<property name="applyNum" column="applyNum" type="int"></property>
+		<property name="createtime" column="createTime" type="timestamp"></property>
+		<property name="isEnable" column="isEnable" type="int"></property>
+		<property name="isCheck" column="isCheck" type="int"></property>
+		<property name="isAutoMatch" column="isAutoMatch" type="int"></property>
+	</class>
+</hibernate-mapping>

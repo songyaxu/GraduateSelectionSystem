@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<package name="public" extends="struts-default">
+		<action name="Login" class="LoginAction">
+			<result name="stuLogin" type="redirect">/student/index.jsp</result>
+			<result name="teaLogin" type="redirect">/teacher/index.jsp</result>
+			<result name="adminLogin" type="redirect">/administrator/index.jsp</result>
+			<result name="input" type="chain">NoticeService</result>
+		</action>
+		<action name="UserInfo" class="UserInfoAction">
+			<result name="stu">/${loginType}/userinfo.jsp</result>
+			<result name="admin">/${loginType}/userinfo.jsp</result>
+			<result name="tea">/${loginType}/userinfo.jsp</result>
+			<result name="error">
+				<param name="location">/${loginType}/userinfo.jsp</param>
+				<param name="message">${message}</param>
+			</result>
+		</action>
+		<action name="DetailNotice" class="DetailNoticeAction">
+			<result name="success">/single.jsp</result>
+			<result name="user"><param name="location">/${loginType}/detail.jsp</param></result>
+		</action>
+		<action name="NoticeService" class="NoticeAction">
+			<result name="success">/login.jsp</result>
+			<result name="NextPage">/notification_list.jsp</result>
+			<result name="more">/notification_list.jsp</result>
+			<result name="frontPage">/notification_list.jsp</result>
+		</action>
+	</package>
+	<package name="private" extends="struts-default">
+		<interceptors>
+			<interceptor name="private"
+				class="com.seventh.interceptor.PrivateInterceptor" />
+				
+			<interceptor-stack name="mydefault">  
+                <interceptor-ref name="defaultStack" />  
+                <interceptor-ref name="private" />  
+            </interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="mydefault" />
+		<global-results>  
+            <!-- 当返回login视图名时，转入/login.jsp页面 -->  
+            <result name="login">/login.html</result>  
+        </global-results>  
+		
+		<action name="MessageAction" class="MessageService">
+			<result name="saved" type="dispatcher"><param name="location">/${loginType}/writemessage.jsp</param></result>
+			<result name="init" type="dispatcher"><param name="location">/${loginType}/writemessage.jsp</param></result> 
+			<result name="error" type="dispatcher"><param name="location">/${loginType}/writemessage.jsp</param></result>
+		</action>
+		<action name="SearchMessage" class="SearchMessageService">
+			<result name="success"><param name="location">/${loginType}/message.jsp</param></result>
+			<result name="nextPage"><param name="location">/${loginType}/message.jsp</param></result>
+			<result name="frontPage"><param name="location">/${loginType}/message.jsp</param></result>
+		</action>
+		<action name="TopicService" class="TopicAction">
+			<result name="stu">/student/topic.jsp</result>
+			<result name="tea">/teacher/topic.jsp</result>
+		</action>
+		<action name="topicdetail" class="TopicInfoAction" method="detail">
+			<result name="detail">/${loginType}/topicdetail.jsp</result>
+		</action>
+		<action name="Topicedit" class="TopicInfoAction">
+			<result name="edit">/${loginType}/edittopic.jsp</result>
+			<result name="update" type="redirect">
+				<param name="location">/${loginType}/Topicedit!init.action</param>
+				<param name="message">${message}</param>
+				<param name="id">${topic.id}</param>
+			</result>
+		</action>
+		<action name="TopicChoice" class="ChoiceMapAction">
+			<result>/${loginType}/alltopic.jsp</result>
+			<result name="frontpage">/${loginType}/alltopic.jsp</result>
+			<result name="nextpage">/${loginType}/alltopic.jsp</result>
+		</action>
+		<action name="NoticeIndex" class="NoticeIndexAction">
+			<result name="success"><param name="location">/${loginType}/notice.jsp</param></result>
+			<result name="NextPage"><param name="location">/${loginType}/notice.jsp</param></result>
+			<result name="frontPage"><param name="location">/${loginType}/notice.jsp</param></result>
+		</action>
+		<action name="SearchNotice" class="SearchNoticeAction">
+			<result name="success"><param name="location">/${loginType}/noticeSearchResult.jsp</param></result>
+			<result name="NextPage"><param name="location">/${loginType}/noticeSearchResult.jsp</param></result>
+			<result name="frontPage"><param name="location">/${loginType}/noticeSearchResult.jsp</param></result>
+		</action>
+		<action name="SearchTopic" class="SearchTopicAction">
+			<result>/${loginType}/searchtopicresult.jsp</result>
+		</action>
+	</package>
+	<package name="authoritystudent" extends="struts-default">
+		<interceptors>
+			<interceptor name="authoritystudent"
+				class="com.seventh.interceptor.AuthorityStudentInterceptor" />
+				
+			<interceptor-stack name="authoritystu">  
+                <interceptor-ref name="defaultStack" />  
+                <interceptor-ref name="authoritystudent" />  
+            </interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="authoritystu" />
+		<global-results>  
+            <!-- 当返回login视图名时，转入/login.jsp页面 -->  
+            <result name="login">/login.html</result>  
+        </global-results>  
+		
+		<action name="StudentService" class="studentAction">
+			<result name="Index" type="dispatcher">/student/index.jsp</result>
+			<result name="error" type="redirectAction">NoticeService</result>
+		</action>
+		<action name="studentInfo" class="studentInfoAction">
+			<result name="success" type="redirect">
+				<param name="location">/student/info.jsp</param>
+			</result>
+			<result name="update" type="redirect">
+				<param name="location">/student/studentInfo.action</param>
+				<param name="message">${message}</param>
+			</result>
+			<result name="modify" type="dispatcher">/student/modifyPW.jsp</result>
+			<result name="modified" type="dispatcher">/student/modifyPW.jsp</result>
+			<result name="error" type="dispatcher">/student/modifyPW.jsp</result>
+		</action>
+		<action name="StuAddTopic" class="StuAddTopicAction">
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+			<result>/student/addtopic.jsp</result>
+			<result name="error">/student/addtopic.jsp</result>
+			<result name="invalid.token">/student/addtopic.jsp</result>
+			<result name="input">/student/addtopic.jsp</result>
+		</action>
+		<action name="StuAddTopicInit" class="StuAddTopicAction" method="init">
+			<result name="init">/student/addtopic.jsp</result>
+		</action>
+		<action name="StuChoiceTopic" class="StuChoiceTopic">
+			<result type="redirect">
+				<param name="location">/student/TopicChoice</param>
+				<param name="message">${message}</param>
+			</result>
+			<result name="error" type="redirect">
+				<param name="location">/student/TopicChoice</param>
+				<param name="message">${message}</param>
+			</result>
+		</action>
+	</package>
+	<package name="authorityteacher" extends="struts-default">
+		<interceptors>
+			<interceptor name="authorityteacher"
+				class="com.seventh.interceptor.AuthorityTeacherInterceptor" />
+				
+			<interceptor-stack name="authoritytea">  
+                <interceptor-ref name="defaultStack" />  
+                <interceptor-ref name="authorityteacher" />  
+            </interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="authoritytea" />
+		<global-results>  
+            <!-- 当返回login视图名时，转入/login.jsp页面 -->  
+            <result name="login">/login.html</result>  
+        </global-results>  
+		<action name="TeacherService" class="TeacherAction">
+			<result name="error" type="redirectAction">NoticeService</result>
+			<result name="Index" type="dispatcher">/teacher/index.jsp</result>
+			<result name="teacher" type="dispatcher">/teacher/info.jsp</result>
+		</action>
+		<action name="AddTopic" class="AddTopicAction">
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+			<result type="redirect">
+				<param name="location" >/teacher/AddTopicInit.action</param>
+				<param name="message">${message}</param>
+			</result>
+			<result name="error" type="redirect">
+				<param name="location">/teacher/AddTopicInit.action</param>
+				<param name="message">${message}</param>
+			</result>
+			<result name="invalid.token" type="redirect">
+				<param name="location">/teacher/AddTopicInit.action</param>
+				<param name="message">${message}</param>
+			</result>
+			<result name="input" type="redirect">
+				<param name="location">/teacher/AddTopicInit.action</param>
+				<param name="message">${message}</param>
+			</result>
+		</action>
+		<action name="AddTopicInit" class="AddTopicAction" method="init">
+			<result name="init">/teacher/addtopic.jsp</result>
+		</action>
+		<action name="SelectStudent" class="SelectStudentAction">
+			<result type="redirect">
+				<param name="location">/teacher/CheckChoice.action</param>
+				<param name="message">${message}</param>
+				<param name="id">${topicId}</param>
+			</result>
+			<result name="error" type="redirect">
+				<param name="location">/teacher/CheckChoice.action</param>
+				<param name="message">${message}</param>
+				<param name="id">${topicId}</param>
+			</result>
+		</action>
+		<action name="TeacherChoice" class="TeacherChoiceAction">
+			<result>/teacher/alltopic.jsp</result>
+			<result name="frontpage">/teacher/alltopic.jsp</result>
+			<result name="nextpage">/teacher/alltopic.jsp</result>
+		</action>
+		<action name="ChoiceStuTopic" class="ChoiceStuTopicAction">
+			<result type="redirect">
+				<param name="location">/teacher/TeacherChoice.action</param>
+				<param name="message">${message}</param>
+			</result>
+			<result name="error" type="redirect">
+				<param name="location">/teacher/TeacherChoice.action</param>
+				<param name="message">${message}</param>
+			</result>
+		</action>
+		<action name="TeacherInfo" class="TeacherInfoAction">
+			<result type="redirect">
+				<param name="location">/teacher/TeacherService!teacherDetail.action</param>
+				<param name="message">${message}</param>
+			</result>
+			<result name="error" type="redirect">
+				<param name="location">/teacher/TeacherService!teacherDetail.action</param>
+				<param name="message">${message}</param>
+			</result>
+			<result name="init">/teacher/modifyPW.jsp</result>
+		</action>
+	</package>
+	<package name="authorityadmin" extends="struts-default">
+		<interceptors>
+			<interceptor name="authorityadmin"
+				class="com.seventh.interceptor.AuthorityAdminInterceptor" />
+				
+			<interceptor-stack name="authorityadm">  
+                <interceptor-ref name="defaultStack" />  
+                <interceptor-ref name="authorityadmin" />  
+            </interceptor-stack>
+		</interceptors>
+		<default-interceptor-ref name="authorityadm" />
+		<global-results>  
+            <!-- 当返回login视图名时，转入/login.jsp页面 -->  
+            <result name="login">/login.html</result>  
+        </global-results> 
+		<action name="CheckChoice" class="CheckChoiceAction">
+			<result>/${loginType}/choicestu.jsp</result>
+		</action>
+		<action name="AdminService" class="AdminAction">
+			<result name="error" type="redirectAction">NoticeService</result>
+			<result name="Index" type="dispatcher">/administrator/index.jsp</result>
+		</action>
+		<action name="adminInfo" class="AdminInfoAction">
+			<result name="success" type="dispatcher">/administrator/info.jsp</result>
+			<result name="update" type="dispatcher">/administrator/info.jsp</result>
+			<result name="modify" type="dispatcher">/administrator/modifyPW.jsp</result>
+			<result name="modified" type="dispatcher">/administrator/modifyPW.jsp</result>
+			<result name="error" type="dispatcher">/administrator/modifyPW.jsp</result>
+		</action>
+		<action name="majorService" class="MajorAction">
+			<result name="check" type="dispatcher">/administrator/major.jsp</result>
+			<result name="add" type="dispatcher">/administrator/addmajor.jsp</result>
+		</action>
+		<action name="addMajor" class="AddMajorAction">
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+			<result name="success">/administrator/addmajor.jsp</result>
+			<result name="invalid.token">/administrator/addmajor.jsp</result>
+		</action>
+		<action name="addClass" class="AddClassAction">
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+			<result name="success" type="redirect">administrator/classService.action?id=${majorId}&amp;message=${message}</result>
+			<result name="error" type="chain">addclassInit</result>
+			<result name="invalid.token">/administrator/addclass.jsp</result>
+		</action>
+		<action name="checkMajor" class="MajorAction" method="checkMajor">
+			<result name="check" type="dispatcher">/administrator/major.jsp</result>
+		</action>
+		<action name="majorInfo" class="MajorInfoAction">
+			<result>/administrator/majorinfo.jsp</result>
+			<result name="deleted" type="chain">checkMajor</result>
+			<result name="error" type="chain">checkMajor</result>
+			<result name="edit">/administrator/editMajor.jsp</result>
+			<result name="update" type="chain">checkMajor</result>
+		</action>
+		<action name="classService" class="ClassAction">
+			<result>/administrator/class.jsp</result>
+			<result name="add">/administrator/addclass.jsp</result>
+		</action>
+		<action name="addclassInit" class="ClassAction" method="addinit">
+			<result name="add">/administrator/addclass.jsp</result>
+		</action>
+		<action name="classInfo" class="ClassInfoAction">
+			<result name="edit">/administrator/editclass.jsp</result>
+			<result name="update">/administrator/editclass.jsp</result>
+			<result name="delete" type="redirect">administrator/classService.action?id=${majorId}&amp;message=${message}</result>
+			<result name="error" type="redirect">administrator/classService.action?id=${majorId}&amp;message=${message}</result>
+		</action>
+		<action name="studentManage" class="StudentManageAction">
+			<result>/administrator/student.jsp</result>
+		</action>
+		<action name="addStudentInit" class="AddStudentAction" method="addinit">
+			<result name="init">/administrator/addstudent.jsp</result>
+		</action>
+		<action name="addStudent" class="AddStudentAction">
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+			<result type="redirect">/administrator/addStudentInit.action?message=${message}</result>
+			<result name="error" type="redirect">/administrator/addStudentInit.action?message=${message}</result>
+			<result name="invalid.token">/administrator/addstudent.jsp</result>
+		</action>
+		<action name="fieldService" class="FieldAction">
+			<result>/administrator/field.jsp</result>
+			<result name="init">/administrator/addfield.jsp</result>
+		</action>
+		<action name="addField" class="AddFieldAction">
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+			<result>
+				<param name="location">/administrator/addfield.jsp</param>
+			</result>
+			<result name="invalid.token">/administrator/addfield.jsp</result>
+		</action>
+		<action name="fieldInfo" class="FieldInfoAction">
+			<result>/administrator/editfield.jsp</result>
+			<result name="error" type="redirect">/administrator/fieldService.action?message=${message}</result>
+			<result name="delete" type="redirect">/administrator/fieldService.action?message=${message}</result>
+			<result name="update" type="redirect">/administrator/fieldService.action?message=${message}</result>
+		</action>
+		<action name="positionService" class="PositionAction">
+			<result>/administrator/position.jsp</result>
+			<result name="init">/administrator/addposition.jsp</result>
+		</action>
+		<action name="addPosition" class="AddPositionAction">
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+			<result>
+				<param name="location">/administrator/addposition.jsp</param>
+			</result>
+			<result name="invalid.token">/administrator/addposition.jsp</result>
+		</action>
+		<action name="positionInfo" class="PositionInfoAction">
+			<result>/administrator/editposition.jsp</result>
+			<result name="update" type="redirect">/administrator/positionService.action?message=${message}</result>
+			<result name="error" type="redirect">/administrator/positionService.action?message=${message}</result>
+			<result name="delete" type="redirect">/administrator/positionService.action?message=${message}</result>
+		</action>
+		<action name="TeacherManage" class="TeacherManageAction">
+			<result>/administrator/teacher.jsp</result>
+			<result name="frontpage">/administrator/teacher.jsp</result>
+			<result name="nextpage">/administrator/teacher.jsp</result>
+		</action>
+		<action name="addTeacher" class="AddTeacherAction">
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+			<result>
+				<param name="location">/administrator/addteacher.jsp</param>
+			</result>
+			<result name="error">
+				<param name="location">/administrator/addteacher.jsp</param>
+			</result>
+			<result name="invalid.token">/administrator/addteacher.jsp</result>
+		</action>
+		<action name="addteacherInit" class="AddTeacherAction" method="init">
+			<result name="init">/administrator/addteacher.jsp</result>
+		</action>
+		<action name="AddNoticeInit" class="NoticeAction" method="addinit">
+			<result name="addinit">/administrator/addnotice.jsp</result>
+		</action>
+		<action name="AddNotice" class="AddNoticeAction">
+			<interceptor-ref name="token"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+			<result>
+				<param name="location">/administrator/addnotice.jsp</param>
+			</result>
+			<result name="error">
+				<param name="location">/administrator/addnotice.jsp</param>
+			</result>
+			<result name="invalid.token">/administrator/addnotice.jsp</result>
+		</action>
+		<action name="configService" class="ConfigAction">
+			<result>/administrator/scrollingnotice.jsp</result>
+			<result name="update">/administrator/scrollingnotice.jsp</result>
+			<result name="config">/administrator/config.jsp</result>
+			<result name="modify">/administrator/config.jsp</result>
+			<result name="input">/administrator/config.jsp</result>
+		</action>
+		<action name="TopicManage" class="TopicManageAction">
+			<result>/administrator/alltopic.jsp</result>
+			<result name="pass" type="redirect">
+				<param name="location">/administrator/TopicManage</param>
+				<param name="pageMessage">${pageMessage}</param>
+			</result>
+			<result name="notpass">/administrator/pointsend.jsp</result>
+			<result name="send" type="redirect">
+				<param name="location">/administrator/TopicManage</param>
+				<param name="pageMessage">${pageMessage}</param>
+			</result>
+		</action>
+	</package>
+</struts>

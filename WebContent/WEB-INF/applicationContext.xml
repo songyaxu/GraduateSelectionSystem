@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+
+		<property name="driverClassName">
+			<value>com.mysql.jdbc.Driver</value>
+		</property>
+
+		<property name="url">
+			<value>jdbc:mysql://localhost:3306/GraduateSelectionSystem</value>
+		</property>
+
+		<property name="username">
+			<value>gssadmin</value>
+		</property>
+
+		<property name="password">
+			<value>123456</value>
+		</property>
+
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+
+		<property name="mappingResources">
+			<list>
+				<value>com/seventh/entity/Student.hbm.xml</value>
+				<value>com/seventh/entity/Notice.hbm.xml</value>
+				<value>com/seventh/entity/Config.hbm.xml</value>
+				<value>com/seventh/entity/Teacher.hbm.xml</value>
+				<value>com/seventh/entity/Admin.hbm.xml</value>
+				<value>com/seventh/entity/Class.hbm.xml</value>
+				<value>com/seventh/entity/Message.hbm.xml</value>
+				<value>com/seventh/entity/Major.hbm.xml</value>
+				<value>com/seventh/entity/Topic.hbm.xml</value>
+				<value>com/seventh/entity/Field.hbm.xml</value>
+				<value>com/seventh/entity/Position.hbm.xml</value>
+				<value>com/seventh/entity/ChoiceMap.hbm.xml</value>
+			</list>
+		</property>
+
+
+		<property name="hibernateProperties">
+
+			<props>
+
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQLDialect
+				</prop>
+				<prop key="hibernate.show_sql">true</prop>
+
+			</props>
+
+		</property>
+
+	</bean>
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<!-- StudentDao -->
+	
+	<bean id="studentDao" class="com.seventh.dao.impl.StudentDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="studentServiceTarget" class="com.seventh.service.impl.StudentServiceImpl">
+		<property name="studentDao" ref="studentDao"></property>
+	</bean>
+
+	<bean id="studentService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="studentServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="studentAction" class="com.seventh.action.student.StudentAction"
+		scope="prototype">
+		<property name="studentService" ref="studentService"></property>
+		<property name="noticeService" ref="noticeService"></property>
+	</bean>
+	<bean id="studentInfoAction" class="com.seventh.action.student.StuInfoAction"
+		scope="prototype">
+		<property name="studentService" ref="studentService"></property>
+		<property name="majorService" ref="majorService"></property>
+		<property name="classService" ref="classService"></property>
+	</bean>
+	<bean id="AddStudentAction" class=" com.seventh.action.student.AddStudentAction"
+		scope="prototype">
+		<property name="studentService" ref="studentService"></property>
+		<property name="classService" ref="classService"></property>
+		<property name="majorService" ref="majorService"></property>
+	</bean>
+	<bean id="StudentManageAction" class="com.seventh.action.student.StudentManageAction"
+		scope="prototype">
+		<property name="studentService" ref="studentService"></property>
+		<property name="classService" ref="classService"></property>
+		<property name="majorService" ref="majorService"></property>
+	</bean>
+	<bean id="UserInfoAction" class="com.seventh.action.pub.UserInfoAction"
+		scope="prototype">
+		<property name="studentService" ref="studentService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="adminService" ref="adminService"></property>
+		<property name="majorService" ref="majorService"></property>
+		<property name="classService" ref="classService"></property>
+		<property name="positionService" ref="positionService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+	</bean>
+	<!-- NoticeDao -->
+	
+	<bean id="noticeDao" class="com.seventh.dao.impl.NoticeDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="noticeServiceTarget" class="com.seventh.service.impl.NoticeServiceImpl">
+		<property name="noticeDao" ref="noticeDao"></property>
+	</bean>
+
+	<bean id="noticeService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="noticeServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="NoticeAction" class="com.seventh.action.notice.NoticeAction"
+		scope="prototype">
+		<property name="noticeService" ref="noticeService"></property>
+		<property name="configService" ref="configService"></property>
+	</bean>
+	<bean id="DetailNoticeAction" class="com.seventh.action.notice.DetailNoticeAction"
+		scope="prototype">
+		<property name="noticeService" ref="noticeService"></property>
+	</bean>
+	<bean id="NoticeIndexAction" class="com.seventh.action.notice.NoticeIndexAction"
+		scope="prototype">
+		<property name="noticeService" ref="noticeService"></property>
+	</bean>
+	<bean id="SearchNoticeAction" class="com.seventh.action.notice.SearchNoticeAction"
+		scope="prototype">
+		<property name="noticeService" ref="noticeService"></property>
+	</bean>
+	<bean id="AddNoticeAction" class="com.seventh.action.notice.AddNoticeAction"
+		scope="prototype">
+		<property name="noticeService" ref="noticeService"></property>
+	</bean>
+	<!--  ConfigDAO -->
+	<bean id="configDao" class="com.seventh.dao.impl.ConfigDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="configServiceTarget" class="com.seventh.service.impl.ConfigServiceImpl">
+		<property name="configDao" ref="configDao"></property>
+	</bean>
+
+	<bean id="configService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="configServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="ConfigAction" class="com.seventh.action.config.ConfigAction"
+		scope="prototype">
+		<property name="configService" ref="configService"></property>
+	</bean>
+	<!-- AdminDAO -->
+	<bean id="adminDao" class="com.seventh.dao.impl.AdminDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="adminServiceTarget" class="com.seventh.service.impl.AdminServiceImpl">
+		<property name="adminDao" ref="adminDao"></property>
+	</bean>
+
+	<bean id="adminService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="adminServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="AdminAction" class="com.seventh.action.admin.AdminAction"
+		scope="prototype">
+		<property name="adminService" ref="adminService"></property>
+		<property name="noticeService" ref="noticeService"></property>
+	</bean>
+	<bean id="AdminInfoAction" class="com.seventh.action.admin.AdminInfoAction" 
+		scope="prototype">
+		<property name="adminService" ref="adminService"></property>
+	</bean>
+	<!-- TeacherDAO -->
+	<bean id="teacherDao" class="com.seventh.dao.impl.TeacherDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="teacherServiceTarget" class="com.seventh.service.impl.TeacherServiceImpl">
+		<property name="teacherDao" ref="teacherDao"></property>
+	</bean>
+
+	<bean id="teacherService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="teacherServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="TeacherAction" class="com.seventh.action.teacher.TeacherAction"
+		scope="prototype">
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="noticeService" ref="noticeService"></property>
+	</bean>
+	<bean id="TeacherManageAction" class="com.seventh.action.teacher.TeacherManageAction"
+		scope="prototype">
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="positionService" ref="positionService"></property>
+	</bean>
+	<bean id="AddTeacherAction" class="com.seventh.action.teacher.AddTeacherAction"
+		scope="prototype">
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="positionService" ref="positionService"></property>
+	</bean>
+	<bean id="TeacherInfoAction" class="com.seventh.action.teacher.TeacherInfoAction"
+		scope="prototype">
+		<property name="teacherService" ref="teacherService"></property>
+	</bean>
+	<!-- MessageDao -->
+	<bean id="messageDao" class="com.seventh.dao.impl.MessageDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="messageServiceTarget" class="com.seventh.service.impl.MessageServiceImpl">
+		<property name="messageDao" ref="messageDao"></property>
+	</bean>
+
+	<bean id="messageService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="messageServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="MessageService" class="com.seventh.action.message.MessageAction"
+		scope="prototype">
+		<property name="messageService" ref="messageService"></property>
+		<property name="studentService" ref="studentService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="adminService" ref="adminService"></property>
+	</bean>
+	<bean id="SearchMessageService" class="com.seventh.action.message.SearchMessageAction"
+		scope="prototype">
+		<property name="messageService" ref="messageService"></property>
+	</bean>
+	<!-- LoginAction -->
+	<bean id="LoginAction" class="com.seventh.action.pub.LoginAction"
+		scope="prototype">
+		<property name="noticeService" ref="noticeService"></property>
+		<property name="studentService" ref="studentService"></property>
+		<property name="adminService" ref="adminService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="positionService" ref="positionService"></property>
+		<property name="configService" ref="configService"></property>
+	</bean>
+	<!-- FieldDao -->
+	<bean id="fieldDao" class="com.seventh.dao.impl.FieldDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="fieldServiceTarget" class="com.seventh.service.impl.FieldServiceImpl">
+		<property name="fieldDao" ref="fieldDao"></property>
+	</bean>
+
+	<bean id="fieldService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="fieldServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="FieldAction" class="com.seventh.action.field.FieldAction"
+		scope="prototype">
+		<property name="fieldService" ref="fieldService"></property>
+	</bean>
+	<bean id="AddFieldAction" class="com.seventh.action.field.AddFieldAction"
+		scope="prototype">
+		<property name="fieldService" ref="fieldService"></property>
+	</bean>
+	<bean id="FieldInfoAction" class="com.seventh.action.field.FieldInfoAction"
+		scope="prototype">
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+	</bean>
+	<!-- PositionDao -->
+	<bean id="positionDao" class="com.seventh.dao.impl.PositionDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="positionServiceTarget" class="com.seventh.service.impl.PositionServiceImpl">
+		<property name="positionDao" ref="positionDao"></property>
+	</bean>
+
+	<bean id="positionService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="positionServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="PositionAction" class="com.seventh.action.position.PositionAction"
+		scope="prototype">
+		<property name="positionService" ref="positionService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+	</bean>
+	<bean id="AddPositionAction" class="com.seventh.action.position.AddPositionAction"
+		scope="prototype">
+		<property name="positionService" ref="positionService"></property>
+	</bean>
+	<bean id="PositionInfoAction" class="com.seventh.action.position.PositionInfoAction"
+		scope="prototype">
+		<property name="positionService" ref="positionService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+	</bean>
+	<!-- MajorDao -->
+	<bean id="majorDao" class="com.seventh.dao.impl.MajorDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="majorServiceTarget" class="com.seventh.service.impl.MajorServiceImpl">
+		<property name="majorDao" ref="majorDao"></property>
+	</bean>
+
+	<bean id="majorService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="majorServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="MajorAction" class="com.seventh.action.major.MajorAction"
+		scope="prototype">
+		<property name="majorService" ref="majorService"></property>
+	</bean>
+	<bean id="AddMajorAction" class="com.seventh.action.major.AddMajorAction"
+		scope="prototype">
+		<property name="majorService" ref="majorService"></property>
+	</bean>
+	<bean id="MajorInfoAction" class="com.seventh.action.major.MajorInfoAction"
+		scope="prototype">
+		<property name="majorService" ref="majorService"></property>
+		<property name="classService" ref="classService"></property>
+	</bean>
+		<!-- ClassDao -->
+	<bean id="classDao" class="com.seventh.dao.impl.ClassDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="classServiceTarget" class="com.seventh.service.impl.ClassServiceImpl">
+		<property name="classDao" ref="classDao"></property>
+	</bean>
+
+	<bean id="classService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="classServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="ClassAction" class="com.seventh.action.clazz.ClassAction"
+		scope="prototype">
+		<property name="classService" ref="classService"></property>
+		<property name="studentService" ref="studentService"></property>
+		<property name="majorService" ref="majorService"></property>
+	</bean>
+	<bean id="AddClassAction" class="com.seventh.action.clazz.AddClassAction"
+		scope="prototype">
+		<property name="classService" ref="classService"></property>
+	</bean>
+	<bean id="ClassInfoAction" class="com.seventh.action.clazz.ClassInfoAction"
+		scope="prototype">
+		<property name="classService" ref="classService"></property>
+		<property name="majorService" ref="majorService"></property>
+		<property name="studentService" ref="studentService"></property>
+	</bean>
+	<!-- TopicDAO -->
+	<bean id="topicDao" class="com.seventh.dao.impl.TopicDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="topicServiceTarget" class="com.seventh.service.impl.TopicServiceImpl">
+		<property name="topicDao" ref="topicDao"></property>
+	</bean>
+
+	<bean id="topicService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="topicServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="AddTopicAction" class="com.seventh.action.topic.AddTopicAction"
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="studentService" ref="studentService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="messageService" ref="messageService"></property>
+	</bean>
+	<bean id="TopicAction" class="com.seventh.action.topic.TopicAction"
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="choiceMapService" ref="choiceMapService"></property>
+	</bean>
+	<bean id="TopicInfoAction" class="com.seventh.action.topic.TopicInfoAction"
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="studentService" ref="studentService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="choiceMapService" ref="choiceMapService"></property>
+	</bean>
+	<bean id="TopicManageAction" class="com.seventh.action.topic.TopicManageAction"
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="messageService" ref="messageService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="studentService" ref="studentService"></property>
+	</bean>
+	<bean id="StuAddTopicAction" class="com.seventh.action.topic.StuAddTopicAction"
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="studentService" ref="studentService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+		<property name="messageService" ref="messageService"></property>
+		<property name="choiceMapService" ref="choiceMapService"></property>
+	</bean>
+	<bean id="SelectStudentAction" class="com.seventh.action.topic.SelectStudentAction"	
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="choiceMapService" ref="choiceMapService"></property>
+		<property name="studentService" ref="studentService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+	</bean>
+	<bean id="ChoiceStuTopicAction" class="com.seventh.action.topic.ChoiceStuTopicAction"
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="choiceMapService" ref="choiceMapService"></property>
+		<property name="studentService" ref="studentService"></property>
+		<property name="teacherService" ref="teacherService"></property>
+	</bean>
+	<bean id="SearchTopicAction" class="com.seventh.action.topic.SearchTopicAction"
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+	</bean>
+	<!-- ChoiceMapDAO -->
+	<bean id="choiceMapDao" class="com.seventh.dao.impl.ChoiceMapDAOImpl" scope="singleton">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="choiceMapServiceTarget" class="com.seventh.service.impl.ChoiceMapServiceImpl">
+		<property name="choiceMapDao" ref="choiceMapDao"></property>
+	</bean>
+
+	<bean id="choiceMapService"
+		class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+
+		<property name="target" ref="choiceMapServiceTarget"></property>
+		<property name="transactionManager" ref="transactionManager"></property>
+
+		<property name="transactionAttributes">
+
+			<props>
+				<prop key="find*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="*">PROPAGATION_REQUIRED</prop>
+			</props>
+
+		</property>
+	</bean>
+	<bean id="ChoiceMapAction" class="com.seventh.action.choicemap.ChoiceMapAction"
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="choiceMapService" ref="choiceMapService"></property>
+	</bean>
+	<bean id="StuChoiceTopic" class="com.seventh.action.choicemap.StuChoiceTopic"
+		scope="prototype">
+		<property name="choiceMapService" ref="choiceMapService"></property>
+		<property name="studentService" ref="studentService"></property>
+		<property name="topicService" ref="topicService"></property>
+	</bean>
+	<bean id="CheckChoiceAction" class=" com.seventh.action.choicemap.CheckChoiceAction"
+		scope="prototype">
+		<property name="choiceMapService" ref="choiceMapService"></property>
+		<property name="topicService" ref="topicService"></property>
+	</bean>
+	<bean id="TeacherChoiceAction" class="com.seventh.action.choicemap.TeacherChoiceAction"
+		scope="prototype">
+		<property name="topicService" ref="topicService"></property>
+		<property name="fieldService" ref="fieldService"></property>
+		<property name="choiceMapService" ref="choiceMapService"></property>
+	</bean>
+</beans>

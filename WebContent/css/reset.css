@@ -1,0 +1,15 @@
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,li,ol,pre,form,fieldset,
+button,input,textarea,th,td,span{margin: 0;padding: 0;} 
+h1,h2,h3,h4,h5,h6{font-size: 100%;}
+html,body,.wrapper{ height: 100%; margin: 0; padding: 0; }
+h1{
+	/*background-color: #000000;*/
+	padding: 30px;
+	height: 50px;
+	color: #FFFFFF;
+	font-size:40px;	
+}
+body{font-family:"微软雅黑","宋体";}
+ul,li,ol{list-style: none;}
+a{text-decoration: none; color: #FFFFFF;}
+a:hover{text-decoration: underline;}
