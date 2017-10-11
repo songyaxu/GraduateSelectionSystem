@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
+encoding//WebContent/jsp/config.json=UTF-8
 encoding//WebContent/login.jsp=UTF-8
 encoding//WebContent/notification_list.jsp=UTF-8
 encoding//WebContent/single.jsp=UTF-8
